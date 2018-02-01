@@ -34,37 +34,4 @@ for i = 1:size(in,1)
     end
 end
     
-    
-
-% if strcmp(target,'J');
-%     out = getdcmj(in,target);
-%     return;
-% end
-% 
-% if strcmp(target,'x');
-%     out = getdcmx(in);
-%     return;
-% end
-% 
-% 
-% try   varargin{1};
-%       Exp = 1;
-% catch Exp = 0; 
-% end
-% 
-% %try eval(['in{1,1}',target])
-%     
-%     for i = 1:size(in,1)
-%         for j = 1:size(in,2)
-%             %out{i,j} = eval(['in{i,j}',target]);
-%             if   ~Exp; out{i,j} = in{i,j}.Ep.(target);
-%             else       t1 = in{i,j}.Ep.(target);
-%                        t2 = exp(spm_vec(t1));
-%                        t1 = spm_unvec(t2,t1);
-%                         
-%                        out{i,j} = t1;
-%             end
-%         end
-%     end
-% %catch fprintf('Warning: coudn''t find parameter %s\n',target);
-% %end
+   

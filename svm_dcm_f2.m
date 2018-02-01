@@ -19,7 +19,11 @@ function o = svm_dcm_f2(A, Pc, P, DoPermute,varargin)
 %--------------------------------------------------------------------------
 a  = loadarraydcm(A);                 % get models
 B  = getdcmp(a,P);                    % get posterior B matrices
-c  = squeeze(cat(4,B{:}));
+
+for i = 1:2
+    c(:,:,i) = squeeze(cat(4,B{:,i}))';
+end
+
 b  = c;
 Q  = @squeeze;
 Pc = round(size(b,1)*(Pc/100));       % percent of data to train with
@@ -27,16 +31,24 @@ Pc = round(size(b,1)*(Pc/100));       % percent of data to train with
 
 %Decide whether to set up an svm or reuse existing
 %--------------------------------------------------------------------------
+verbose = 0;
+try verbose = varargin{3}; end
 try
     if isstruct(varargin{3})
          SVMS = varargin{3}; % initialise existing svm?
          Build = 0;
-         fprintf('existing svm, not re-training\n');
+         if verbose
+             fprintf('existing svm, not re-training\n');
+         end
     else Build = 1;
-         fprintf('building and training new svm\n');
+         if verbose
+             fprintf('building and training new svm\n');
+         end
     end
 catch Build = 1;
-      fprintf('building and training new svm\n');
+    if verbose
+        fprintf('building and training new svm\n');
+    end
     
 end
     

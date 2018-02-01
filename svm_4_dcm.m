@@ -7,12 +7,13 @@ classdef svm_4_dcm
       nperm       % number of permutations
       f           % inbuil svm machine: @fitNaiveBayes or @svmtrain
       Scl         % Scale vectors [0/1]
+      NumCrossVals% For NewSVM only: number of cross vals
    end
    methods
        
       function r = svm(obj)
          % svm train & classify function, optionally using machine: (f).
-         r = svm_dcm_f(obj.A, obj.Pc, obj.P, obj.DoPermute,obj.f);
+         r = svm_dcm_f2(obj.A, obj.Pc, obj.P, obj.DoPermute,obj.f);
       end
       function r = svmp(obj)
          % permutation wrapper on the above
@@ -20,5 +21,9 @@ classdef svm_4_dcm
          
       end
       
+      function [PatientCategorySVM,Preds] = NewSVM(obj)
+          % NewSVM: based on Krish cross-val code
+          [PatientCategorySVM,Preds] = new_svm4dcm(obj.A, obj.P, obj.nperm,obj.NumCrossVals);
+      end
    end
 end
