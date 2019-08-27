@@ -1,4 +1,4 @@
-function [PatientCategorySVM,Preds] = new_svm4dcm(A, P, NumPerms, NumCrossVals)
+function [PerfGeneralise,PatientCategorySVM,Preds,SVMModel,Parameters] = new_svm4dcm(A,A2, P, NumPerms, NumCrossVals,varargin)
 % Apply a linear SVM to some DCMs.
 %
 % Input A is a cell array of DCM filenames, of shape A{subjects x group}
@@ -10,41 +10,65 @@ function [PatientCategorySVM,Preds] = new_svm4dcm(A, P, NumPerms, NumCrossVals)
 %
 % AS
 
-if nargin < 3
+if nargin < 3 
     NumPerms     = 10000;
 end
-if nargin < 4
+if nargin < 4 
     NumCrossVals = 100;
 end
 
 a  = loadarraydcm(A);                 % get models
-B  = getdcmp(a,P);                    % get posterior B matrices
-PatientCode = [zeros(size(A,1),1); ones(size(A,1),1)];
+a2 = loadarraydcm(A2);
+
+a = [a; a2]; % conncatenate
+
+
+B  = getdcmp(a,P);                    % get posterior matrices
+
+PatientCode = [zeros(size(A,1),1); ones(size(A2,1),1)];
 
 % unpack the parameters returned into a 3D array
 for i = 1:2
-    c(:,:,i) = squeeze(cat(4,B{:,i}))';
+    these = find(PatientCode==(i-1));
+    c{i} = squeeze(cat(4,B{these}))';
+    %c(:,:,i) = squeeze(cat(4,B{these}));
+    %c(:,:,i) = squeeze(cat(4,B{:,i}))';
+    
 end
 
-if size(c,1) ~= (floor(length(PatientCode)/2))
-    c = permute(c,[2 1 3]);
-end
+% if size(c,1) ~= (floor(length(PatientCode)/2))
+%     c = permute(c,[2 1 3]);
+% end
+
+
+% if ismember(P,{'A','AN'})
+%     fprintf('expoonentiating');
+%     c(c==-32) = -inf;
+%     c = exp(c);
+%     c(c==1) = 0;
+% end
 
 % normalise parameters across subjects to have SD=1
 for i = 1:2
-    for j=1:size(c,2),
-        c(:,j,i)=c(:,j,i)/std(c(:,j,i));
+    for j=1:size(c,2)
+        c{i}(:,j) = c{i}(:,j)/std(c{i}(:,j));
+        %c(:,j,i)=c(:,j,i)/std(c(:,j,i));
+        c{i}(isnan(c{i})) = 0;
     end
 end
 
+
+
 % remove any NaNs we introduced
-c(isnan(c)) = 0;
+%c(isnan(c)) = 0;
 
 % reshape this 3D matrix from (sub x param x group) to (allsubs x param)
-Parameters = [c(:,:,1); c(:,:,2)];
+%Parameters = [c(:,:,1); c(:,:,2)];
+Parameters = [c{1}; c{2}];
+%Parameters = shrink(Parameters,2);
+size(Parameters)
 
-    
-% Classify using repeated Parameters i.e. 11x3 parameters
+% Classify using repeated Parameters
 DCMParametersToClassify = Parameters;
     
 Nsub         = length(PatientCode);

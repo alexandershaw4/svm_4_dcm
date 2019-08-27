@@ -27,6 +27,9 @@ function m = svm_dcm_p(A, Pc, P, nperm, Scl)
 h2  = waitbar(0, 'Running permutations through SVM');
 %Scl = 1; % scaling [def]
 
+if nargin < 5
+    Scl = 1;
+end
 
 o = svm_dcm_f2(A, Pc, P, 1,[],Scl); % first train/class
 

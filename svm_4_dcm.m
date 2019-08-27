@@ -23,7 +23,7 @@ classdef svm_4_dcm
       
       function [PatientCategorySVM,Preds] = NewSVM(obj)
           % NewSVM: based on Krish cross-val code
-          [PatientCategorySVM,Preds] = new_svm4dcm(obj.A, obj.P, obj.nperm,obj.NumCrossVals);
+          [PatientCategorySVM,Preds] = new_svm4dcm(obj.A(:,1),obj.A(:,2), obj.P, obj.nperm,obj.NumCrossVals);
       end
    end
 end

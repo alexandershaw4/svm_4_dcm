@@ -128,6 +128,11 @@ end
 
 warning off
 
+
+% remove empties
+Tr = shrink(Tr,2);
+TEST = shrink(TEST,2);
+
 % train if new
 %--------------------------------------------------------------------------
 if Build;

@@ -30,7 +30,12 @@ end
     
 for i = 1:size(in,1)
     for j = 1:size(in,2)
-        out{i,j} = spm_vec( in{i,j}.Ep.(target));
+        try   out{i,j} = spm_vec( in{i,j}.Ep.(target));
+        catch 
+            try 
+                out{i,j} = spm_vec( in{i,j}.Eg.(target));
+            end
+        end
     end
 end
     
